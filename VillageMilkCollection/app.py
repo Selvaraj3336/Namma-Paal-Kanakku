@@ -1,13 +1,18 @@
 from flask import Flask, render_template, request, redirect, session, flash
 import sqlite3
 from urllib.parse import quote
+import os
 
 app = Flask(__name__)
 app.secret_key = "milk_secret_key"
 
 
+# Add this after app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "milk.db")
+
 def get_db():
-    return sqlite3.connect("milk.db")
+    return sqlite3.connect(DB_PATH)  # ✅ Absolute path
 
 
 def login_required():
