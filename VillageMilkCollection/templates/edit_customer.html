@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Edit Customer — Namma Paal Kanakku{% endblock %}
+
+{% block content %}
+<main class="page-main-sm" style="padding-top:88px;">
+
+  <!-- ── Hero ── -->
+  <div class="glass-card" style="border-radius:16px;overflow:hidden;margin-bottom:24px;height:120px;position:relative;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(38,49,67,0.7),rgba(16,20,21,0.8));"></div>
+    <div style="position:absolute;bottom:16px;left:24px;">
+      <span class="font-label-caps" style="color:var(--secondary);display:block;margin-bottom:4px;">EDIT</span>
+      <h2 class="font-title-md" style="color:white;">{{ customer[2] }}</h2>
+    </div>
+    <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;background:var(--secondary);border-radius:50%;filter:blur(40px);opacity:0.15;"></div>
+  </div>
+
+  <!-- ── Form Card ── -->
+  <div class="glass-card" style="border-radius:18px;padding:var(--card-padding);">
+    <form method="POST" style="display:flex;flex-direction:column;gap:0;">
+
+      <!-- Name -->
+      <div class="field-group">
+        <label>Customer Name</label>
+        <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--outline-variant);padding-bottom:8px;" class="form-line">
+          <span class="material-symbols-outlined" style="color:var(--on-surface-variant);font-size:20px;">person</span>
+          <input type="text" name="name" value="{{ customer[2] }}" class="stitch-input"
+                 style="border:none;padding:8px 0;border-radius:0;background:transparent;" required>
+        </div>
+      </div>
+
+      <!-- Mobile -->
+      <div class="field-group">
+        <label>Mobile Number</label>
+        <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--outline-variant);padding-bottom:8px;" class="form-line">
+          <span class="material-symbols-outlined" style="color:var(--on-surface-variant);font-size:20px;">call</span>
+          <input type="tel" name="mobile" value="{{ customer[3] }}" class="stitch-input"
+                 style="border:none;padding:8px 0;border-radius:0;background:transparent;" required>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="field-group">
+        <label>Address</label>
+        <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--outline-variant);padding-bottom:8px;" class="form-line">
+          <span class="material-symbols-outlined" style="color:var(--on-surface-variant);font-size:20px;">home</span>
+          <input type="text" name="address" value="{{ customer[4] }}" class="stitch-input"
+                 style="border:none;padding:8px 0;border-radius:0;background:transparent;" required>
+        </div>
+      </div>
+
+      <!-- Rate -->
+      <div class="field-group" style="margin-bottom:32px;">
+        <label>Rate per Litre (₹)</label>
+        <div style="display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--outline-variant);padding-bottom:8px;" class="form-line">
+          <span class="material-symbols-outlined" style="color:var(--on-surface-variant);font-size:20px;">payments</span>
+          <input type="number" name="rate" value="{{ customer[5] }}" step="0.01" min="0" class="stitch-input"
+                 style="border:none;padding:8px 0;border-radius:0;background:transparent;" required>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;gap:12px;">
+        <button type="submit" class="btn-primary" style="flex:1;height:52px;border-radius:14px;font-size:15px;gap:8px;">
+          <span class="material-symbols-outlined" style="font-size:20px;">update</span>
+          Update Customer
+        </button>
+        <a href="/customers" class="btn-ghost" style="padding:0 20px;height:52px;">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('.form-line').forEach(line => {
+    const input = line.querySelector('input');
+    const icon  = line.querySelector('.material-symbols-outlined');
+    if (!input || !icon) return;
+    input.addEventListener('focus', () => {
+      line.style.borderBottomColor = 'var(--primary)';
+      icon.style.color = 'var(--primary)';
+    });
+    input.addEventListener('blur', () => {
+      line.style.borderBottomColor = 'var(--outline-variant)';
+      icon.style.color = 'var(--on-surface-variant)';
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Customers — Namma Paal Kanakku{% endblock %}
+
+{% block content %}
+<main class="page-main" style="padding-top:88px;">
+
+  <!-- ── Header ── -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <p class="font-label-caps" style="color:var(--primary);margin-bottom:4px;">MANAGEMENT</p>
+      <h2 class="font-title-md" style="color:var(--on-surface);">Customer Directory</h2>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="font-mono-data" style="color:var(--on-surface-variant);">Total: {{ customers|length }}</span>
+      <a href="/add_customer" class="btn-gradient" style="padding:10px 18px;border-radius:12px;font-size:14px;gap:6px;">
+        <span class="material-symbols-outlined" style="font-size:18px;">person_add</span>
+        Add Customer
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Search ── -->
+  <div class="glass-input" style="display:flex;align-items:center;padding:12px 16px;border-radius:12px;margin-bottom:20px;">
+    <span class="material-symbols-outlined" style="color:var(--on-surface-variant);margin-right:10px;">search</span>
+    <input type="text" id="customerSearch" placeholder="Search customers by name, mobile, or address…"
+           style="background:transparent;border:none;color:var(--on-surface);font-family:'Inter';font-size:15px;outline:none;flex:1;"
+           oninput="filterCustomers(this.value)">
+  </div>
+
+  <!-- ── Table Container ── -->
+  <div class="glass-card" style="border-radius:18px;overflow:hidden;">
+
+    <div style="overflow-x:auto;">
+      <table class="stitch-table" id="customersTable">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Mobile</th>
+            <th class="hide-mobile">Address</th>
+            <th style="text-align:right;">Rate / L</th>
+            <th style="text-align:center;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if customers %}
+            {% for customer in customers %}
+            <tr class="customer-row">
+              <td>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div class="avatar-init">{{ customer[2][:2]|upper }}</div>
+                  <div>
+                    <p style="font-weight:500;color:var(--on-surface);">{{ customer[2] }}</p>
+                    <p class="font-label-caps" style="color:var(--on-surface-variant);margin-top:1px;">ID: {{ customer[0] }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="font-mono-data" style="color:var(--on-surface-variant);">{{ customer[3] }}</td>
+              <td class="hide-mobile" style="color:var(--on-surface-variant);font-size:13px;">{{ customer[4] }}</td>
+              <td style="text-align:right;">
+                <span class="font-mono-data" style="color:var(--primary);font-weight:600;">₹{{ customer[5] }}</span>
+              </td>
+              <td>
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                  <a href="/edit_customer/{{ customer[0] }}" class="btn-warning" style="padding:6px 12px;font-size:12px;gap:4px;">
+                    <span class="material-symbols-outlined" style="font-size:15px;">edit</span>
+                    Edit
+                  </a>
+                  <a href="/delete_customer/{{ customer[0] }}" class="btn-danger" style="padding:6px 12px;font-size:12px;gap:4px;"
+                     onclick="return confirmDelete('{{ customer[2] }}')">
+                    <span class="material-symbols-outlined" style="font-size:15px;">delete</span>
+                    Delete
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" style="text-align:center;padding:48px;color:var(--on-surface-variant);">
+                <span class="material-symbols-outlined" style="font-size:48px;display:block;margin-bottom:12px;opacity:0.4;">group_off</span>
+                <p class="font-title-md" style="margin-bottom:8px;">No customers yet</p>
+                <p class="font-body-sm">Add your first customer to get started</p>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function filterCustomers(query) {
+    const rows = document.querySelectorAll('.customer-row');
+    const q = query.toLowerCase();
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(q) ? '' : 'none';
+    });
+  }
+
+  function confirmDelete(name) {
+    return confirm(`Are you sure you want to delete "${name}"?\nThis action cannot be undone.`);
+  }
+</script>
+{% endblock %}

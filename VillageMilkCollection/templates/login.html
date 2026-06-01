@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Namma Paal Kanakku</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .auth-wrap {
+      width: 100%;
+      max-width: 460px;
+      z-index: 1;
+    }
+    .input-row {
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+      padding: 10px 0;
+      gap: 10px;
+      transition: border-color 0.3s ease;
+    }
+    .input-row:focus-within {
+      border-bottom-color: var(--primary);
+      box-shadow: 0 6px 16px -8px rgba(149,211,186,0.25);
+    }
+    .input-row input {
+      background: transparent;
+      border: none;
+      color: var(--on-surface);
+      font-family: 'Inter';
+      font-size: 16px;
+      outline: none;
+      flex: 1;
+    }
+    .input-row input::placeholder { color: rgba(137,147,141,0.5); }
+    .input-row .material-symbols-outlined { color: var(--secondary); font-size: 20px; }
+    .input-row:focus-within .material-symbols-outlined { color: var(--primary); }
+    .eye-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--secondary); padding: 2px;
+    }
+    .eye-btn:hover { color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="animated-bg"></div>
+
+  <div class="auth-wrap">
+    <!-- Branding -->
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:32px;">
+      <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--tertiary));display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 8px 24px rgba(149,211,186,0.25);">
+        <span class="material-symbols-outlined fill" style="font-size:36px;color:var(--on-primary-fixed);">water_drop</span>
+      </div>
+      <h1 style="font-family:'Inter';font-size:28px;font-weight:700;letter-spacing:-0.01em;color:var(--primary);margin-bottom:6px;">Namma Paal Kanakku</h1>
+      <p style="color:var(--on-surface-variant);font-size:14px;">Precision dairy management platform</p>
+    </div>
+
+    <!-- Card -->
+    <div class="glass-panel" style="border-radius:24px;padding:var(--card-padding);">
+      <div style="margin-bottom:28px;">
+        <h2 style="font-family:'Inter';font-size:20px;font-weight:500;color:var(--on-surface);margin-bottom:4px;">Welcome back</h2>
+        <p style="font-size:14px;color:var(--on-surface-variant);">Sign in to your account</p>
+      </div>
+
+      {% if error %}
+        <div class="alert-stitch alert-error" style="margin-bottom:20px;">
+          <span class="material-symbols-outlined" style="font-size:18px;">error_outline</span>
+          {{ error }}
+        </div>
+      {% endif %}
+
+      <form method="POST" id="loginForm" style="display:flex;flex-direction:column;gap:24px;">
+        <!-- Phone -->
+        <div>
+          <label class="font-label-caps" style="color:var(--secondary);display:block;margin-bottom:8px;">Mobile Number</label>
+          <div class="input-row">
+            <span class="material-symbols-outlined">call</span>
+            <input type="tel" name="phone" placeholder="Enter your mobile number" required autocomplete="tel">
+          </div>
+        </div>
+        <!-- Password -->
+        <div>
+          <label class="font-label-caps" style="color:var(--secondary);display:block;margin-bottom:8px;">Password</label>
+          <div class="input-row">
+            <span class="material-symbols-outlined">lock</span>
+            <input type="password" name="password" id="loginPwd" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="eye-btn" onclick="togglePwd('loginPwd','eyeLogin')">
+              <span class="material-symbols-outlined" id="eyeLogin" style="font-size:20px;">visibility</span>
+            </button>
+          </div>
+        </div>
+        <!-- Submit -->
+        <button type="submit" class="btn-primary" style="margin-top:8px;">
+          <span>Sign In</span>
+          <span class="material-symbols-outlined" style="font-size:20px;">arrow_forward</span>
+        </button>
+      </form>
+
+      <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+        <p style="font-size:14px;color:var(--on-surface-variant);">
+          New user?
+          <a href="/register" style="color:var(--primary);font-weight:600;text-decoration:none;">Create account</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePwd(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon  = document.getElementById(iconId);
+      input.type  = input.type === 'password' ? 'text' : 'password';
+      icon.textContent = input.type === 'password' ? 'visibility' : 'visibility_off';
+    }
+  </script>
+</body>
+</html>

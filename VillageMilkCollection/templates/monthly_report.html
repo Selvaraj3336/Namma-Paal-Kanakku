@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block title %}Monthly Report — Namma Paal Kanakku{% endblock %}
+
+{% block content %}
+<main class="page-main" style="padding-top:88px;">
+
+  <!-- ── Header ── -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <p class="font-label-caps" style="color:var(--primary);margin-bottom:4px;">ANALYTICS</p>
+      <h2 class="font-title-md" style="font-size:26px;color:var(--on-surface);">Monthly Report</h2>
+      <p class="font-body-sm" style="color:var(--on-surface-variant);">Comprehensive performance metrics for the selected period.</p>
+    </div>
+  </div>
+
+  <!-- ── Filter Form ── -->
+  <div class="glass-card" style="border-radius:18px;padding:var(--card-padding);margin-bottom:28px;">
+    <form method="POST" style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;">
+
+      <div style="flex:1;min-width:140px;">
+        <label class="font-label-caps" style="color:var(--secondary);display:block;margin-bottom:8px;">SELECT MONTH</label>
+        <div style="position:relative;">
+          <select name="month" class="stitch-select" required>
+            <option value="01" {% if selected_month == '01' %}selected{% endif %}>January</option>
+            <option value="02" {% if selected_month == '02' %}selected{% endif %}>February</option>
+            <option value="03" {% if selected_month == '03' %}selected{% endif %}>March</option>
+            <option value="04" {% if selected_month == '04' %}selected{% endif %}>April</option>
+            <option value="05" {% if selected_month == '05' %}selected{% endif %}>May</option>
+            <option value="06" {% if selected_month == '06' %}selected{% endif %}>June</option>
+            <option value="07" {% if selected_month == '07' %}selected{% endif %}>July</option>
+            <option value="08" {% if selected_month == '08' %}selected{% endif %}>August</option>
+            <option value="09" {% if selected_month == '09' %}selected{% endif %}>September</option>
+            <option value="10" {% if selected_month == '10' %}selected{% endif %}>October</option>
+            <option value="11" {% if selected_month == '11' %}selected{% endif %}>November</option>
+            <option value="12" {% if selected_month == '12' %}selected{% endif %}>December</option>
+          </select>
+          <span class="material-symbols-outlined" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--primary);pointer-events:none;font-size:18px;">expand_more</span>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:100px;">
+        <label class="font-label-caps" style="color:var(--secondary);display:block;margin-bottom:8px;">YEAR</label>
+        <input type="number" name="year" value="{{ selected_year or '2026' }}" min="2020" max="2099"
+               class="stitch-input" style="padding:12px 14px;" required>
+      </div>
+
+      <button type="submit" class="btn-gradient" style="padding:12px 24px;border-radius:12px;font-size:15px;gap:8px;height:50px;flex-shrink:0;">
+        <span class="material-symbols-outlined" style="font-size:18px;">analytics</span>
+        Show Report
+      </button>
+
+    </form>
+  </div>
+
+  {% if report %}
+
+    <!-- ── Summary Cards ── -->
+    {% set total_litres = namespace(value=0) %}
+    {% set total_revenue = namespace(value=0) %}
+    {% for row in report %}
+      {% set total_litres.value = total_litres.value + row[4] %}
+      {% set total_revenue.value = total_revenue.value + (row[4] * row[5]) %}
+    {% endfor %}
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px;">
+
+      <div class="stat-card">
+        <div class="bg-blob" style="background:var(--primary);"></div>
+        <div style="margin-bottom:10px;">
+          <span class="material-symbols-outlined" style="background:var(--primary-container);padding:8px;border-radius:10px;color:var(--primary);font-size:20px;">group</span>
+        </div>
+        <p class="font-label-caps" style="color:var(--on-surface-variant);margin-bottom:4px;">CUSTOMERS</p>
+        <h3 class="font-display-lg" style="font-size:36px;color:var(--on-surface);">{{ report|length }}</h3>
+      </div>
+
+      <div class="stat-card">
+        <div class="bg-blob" style="background:var(--tertiary);"></div>
+        <div style="margin-bottom:10px;">
+          <span class="material-symbols-outlined" style="background:var(--tertiary-container);padding:8px;border-radius:10px;color:var(--tertiary);font-size:20px;">water_drop</span>
+        </div>
+        <p class="font-label-caps" style="color:var(--on-surface-variant);margin-bottom:4px;">TOTAL LITRES</p>
+        <h3 class="font-display-lg" style="font-size:36px;color:var(--on-surface);">{{ "%.1f"|format(total_litres.value) }}</h3>
+      </div>
+
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(6,78,59,0.25),rgba(29,32,34,0.45));border-color:rgba(149,211,186,0.15);">
+        <div class="bg-blob" style="background:var(--primary);opacity:0.5;"></div>
+        <div style="margin-bottom:10px;">
+          <span class="material-symbols-outlined fill" style="background:rgba(255,255,255,0.07);padding:8px;border-radius:10px;color:var(--primary);font-size:20px;">payments</span>
+        </div>
+        <p class="font-label-caps" style="color:var(--primary);margin-bottom:4px;">TOTAL REVENUE</p>
+        <h3 class="font-display-lg" style="font-size:32px;color:var(--on-surface);">₹{{ "%.0f"|format(total_revenue.value) }}</h3>
+      </div>
+
+    </div>
+
+    <!-- ── Detailed Table ── -->
+    <div class="glass-card" style="border-radius:18px;overflow:hidden;">
+
+      <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <h3 class="font-title-md" style="color:var(--on-surface);display:flex;align-items:center;gap:8px;">
+          <span class="material-symbols-outlined" style="color:var(--primary);font-size:20px;">list_alt</span>
+          Customer Breakdown
+        </h3>
+        <div style="position:relative;">
+          <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--on-surface-variant);font-size:18px;">search</span>
+          <input type="text" id="reportSearch" placeholder="Search customer…"
+                 style="background:var(--surface-container-low);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px 10px 8px 34px;color:var(--on-surface);font-size:13px;outline:none;width:200px;"
+                 oninput="filterReport(this.value)">
+        </div>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="stitch-table" id="reportTable">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th style="text-align:center;">Morning (L)</th>
+              <th style="text-align:center;">Evening (L)</th>
+              <th style="text-align:center;">Total (L)</th>
+              <th style="text-align:right;">Rate</th>
+              <th style="text-align:right;">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in report %}
+            <tr class="report-row">
+              <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="avatar-init">{{ row[0][:2]|upper }}</div>
+                  <div>
+                    <p style="font-weight:500;">{{ row[0] }}</p>
+                    <p class="font-label-caps" style="color:var(--on-surface-variant);font-size:10px;margin-top:1px;">{{ row[1] }}</p>
+                  </div>
+                </div>
+              </td>
+              <td style="text-align:center;" class="font-mono-data" style="color:var(--on-surface-variant);">{{ "%.1f"|format(row[2]) }}</td>
+              <td style="text-align:center;" class="font-mono-data" style="color:var(--on-surface-variant);">{{ "%.1f"|format(row[3]) }}</td>
+              <td style="text-align:center;">
+                <span class="font-mono-data" style="color:var(--primary);font-weight:600;">{{ "%.1f"|format(row[4]) }}</span>
+              </td>
+              <td style="text-align:right;" class="font-mono-data" style="color:var(--on-surface-variant);">₹{{ row[5] }}</td>
+              <td style="text-align:right;">
+                <span class="font-mono-data" style="color:var(--tertiary);font-weight:600;font-size:15px;">₹{{ "%.0f"|format(row[4] * row[5]) }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer Total -->
+      <div style="padding:16px 24px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:flex-end;gap:32px;">
+        <div style="text-align:right;">
+          <p class="font-label-caps" style="color:var(--on-surface-variant);">GRAND TOTAL</p>
+          <p class="font-mono-data" style="color:var(--tertiary);font-size:20px;font-weight:700;">₹{{ "%.0f"|format(total_revenue.value) }}</p>
+        </div>
+      </div>
+
+    </div>
+
+  {% elif selected_month %}
+    <div class="glass-card" style="border-radius:18px;padding:64px 32px;text-align:center;">
+      <span class="material-symbols-outlined" style="font-size:56px;color:var(--on-surface-variant);opacity:0.4;display:block;margin-bottom:16px;">search_off</span>
+      <p class="font-title-md" style="color:var(--on-surface);margin-bottom:6px;">No data found</p>
+      <p class="font-body-sm" style="color:var(--on-surface-variant);">No entries for the selected month and year.</p>
+    </div>
+  {% endif %}
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function filterReport(query) {
+    const rows = document.querySelectorAll('.report-row');
+    const q = query.toLowerCase();
+    rows.forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Milk Entry — Namma Paal Kanakku{% endblock %}
+
+{% block content %}
+<main class="page-main-md" style="padding-top:88px;">
+
+  <div style="margin-bottom:24px;">
+    <p class="font-label-caps" style="color:var(--tertiary);margin-bottom:4px;">RECORD</p>
+    <h2 class="font-headline-lg-mobile" style="color:var(--on-surface);">New Milk Entry</h2>
+  </div>
+
+  <form method="POST" id="milkEntryForm" style="display:flex;flex-direction:column;gap:16px;">
+
+    <!-- ── Customer Selection ── -->
+    <section class="glass-card" style="border-radius:16px;padding:var(--card-padding);">
+      <label class="font-label-caps" style="color:var(--secondary);display:block;margin-bottom:12px;">SELECT CUSTOMER</label>
+      <div style="position:relative;">
+        <select name="customer_id" class="stitch-select" required id="customerSelect" onchange="updateRate()">
+          {% for customer in customers %}
+          <option value="{{ customer[0] }}" data-rate="{{ customer[2] if customer|length > 2 else 0 }}">{{ customer[1] }}</option>
+          {% endfor %}
+        </select>
+        <span class="material-symbols-outlined" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--primary);pointer-events:none;font-size:20px;">expand_more</span>
+      </div>
+    </section>
+
+    <!-- ── Date & Session ── -->
+    <section style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+      <!-- Date -->
+      <div class="glass-card" style="border-radius:16px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <span class="font-label-caps" style="color:var(--secondary);display:block;margin-bottom:4px;">ENTRY DATE</span>
+          <input type="date" name="entry_date" id="entryDate" required
+                 style="background:transparent;border:none;color:var(--on-surface);font-family:'Inter';font-size:16px;font-weight:500;outline:none;width:100%;">
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--primary);font-size:22px;">calendar_today</span>
+      </div>
+
+      <!-- Session Toggle -->
+      <div class="glass-card" style="border-radius:16px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <span class="font-label-caps" style="color:var(--secondary);display:block;margin-bottom:4px;">SESSION</span>
+          <span class="font-title-md" style="color:var(--on-surface);" id="sessionLabel">Morning</span>
+        </div>
+        <input type="hidden" name="session" id="sessionValue" value="Morning">
+        <div class="session-toggle" onclick="toggleSession()" title="Toggle AM/PM">
+          <div class="session-pill" id="sessionPill"></div>
+          <span class="session-label" id="amLabel" style="color:var(--on-primary-fixed);">AM</span>
+          <span class="session-label" id="pmLabel" style="color:var(--on-surface-variant);">PM</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── Litre Input Hero ── -->
+    <section class="glass-card" style="border-radius:18px;padding:var(--card-padding);text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-60px;right:-60px;width:160px;height:160px;background:var(--primary);border-radius:50%;filter:blur(60px);opacity:0.08;pointer-events:none;"></div>
+
+      <label class="font-label-caps" style="color:var(--secondary);display:block;margin-bottom:8px;">MILK QUANTITY (LITRES)</label>
+
+      <div style="display:flex;align-items:baseline;justify-content:center;gap:8px;margin:8px 0;">
+        <input type="number" name="litre" id="litreInput" step="0.1" min="0" max="999" required
+               placeholder="0.0"
+               style="background:transparent;border:none;text-align:center;font-family:'Inter';font-size:56px;font-weight:700;letter-spacing:-0.02em;color:var(--primary);width:240px;outline:none;"
+               oninput="calcAmount()">
+        <span class="font-headline-lg-mobile" style="color:var(--on-surface-variant);">L</span>
+      </div>
+
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(69,223,164,0.1);border-radius:var(--radius-full);margin-top:4px;">
+        <span class="font-label-caps" style="color:var(--tertiary);">EST. AMOUNT:</span>
+        <span class="font-mono-data" style="color:var(--tertiary);" id="estAmount">₹0.00</span>
+      </div>
+    </section>
+
+    <!-- ── Numpad ── -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:320px;margin:0 auto;width:100%;">
+      {% for n in ['1','2','3','4','5','6','7','8','9','.','0','⌫'] %}
+      <button type="button" class="glass-card"
+              style="height:60px;border-radius:12px;font-family:'Inter';font-size:22px;font-weight:600;color:{% if n == '⌫' %}var(--error){% else %}var(--on-surface){% endif %};border:none;cursor:pointer;transition:all 0.15s ease;display:flex;align-items:center;justify-content:center;"
+              onclick="numpad('{{ n }}')"
+              onmousedown="this.style.transform='scale(0.95)'"
+              onmouseup="this.style.transform='scale(1)'"
+              onmouseleave="this.style.transform='scale(1)'">
+        {% if n == '⌫' %}<span class="material-symbols-outlined" style="font-size:22px;">backspace</span>{% else %}{{ n }}{% endif %}
+      </button>
+      {% endfor %}
+    </div>
+
+    <!-- ── Submit ── -->
+    <button type="submit" class="btn-gradient" style="height:60px;border-radius:16px;font-size:16px;font-weight:600;gap:10px;margin-top:4px;">
+      <span class="material-symbols-outlined" style="font-size:22px;">save</span>
+      Save Entry
+    </button>
+
+  </form>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Set today's date by default
+  const dateInput = document.getElementById('entryDate');
+  dateInput.value = new Date().toISOString().split('T')[0];
+
+  // Rate per litre (fallback)
+  let ratePerLitre = 0;
+
+  // Session toggle
+  let isMorning = true;
+  function toggleSession() {
+    isMorning = !isMorning;
+    const pill   = document.getElementById('sessionPill');
+    const label  = document.getElementById('sessionLabel');
+    const val    = document.getElementById('sessionValue');
+    const amLbl  = document.getElementById('amLabel');
+    const pmLbl  = document.getElementById('pmLabel');
+
+    if (isMorning) {
+      pill.style.left = '4px';
+      label.textContent = 'Morning';
+      val.value = 'Morning';
+      amLbl.style.color = 'var(--on-primary-fixed)';
+      pmLbl.style.color = 'var(--on-surface-variant)';
+    } else {
+      pill.style.left = 'calc(50% + 0px)';
+      label.textContent = 'Evening';
+      val.value = 'Evening';
+      pmLbl.style.color = 'var(--on-primary-fixed)';
+      amLbl.style.color = 'var(--on-surface-variant)';
+    }
+  }
+
+  // Numpad logic
+  function numpad(key) {
+    const inp = document.getElementById('litreInput');
+    let current = inp.value === '' ? '' : inp.value;
+    if (key === '⌫') {
+      inp.value = current.slice(0, -1);
+    } else if (key === '.') {
+      if (!current.includes('.')) inp.value = current + '.';
+    } else {
+      if (current.replace('.','').length < 5) inp.value = current + key;
+    }
+    calcAmount();
+  }
+
+  function calcAmount() {
+    const inp = document.getElementById('litreInput');
+    const amt = document.getElementById('estAmount');
+    const litres = parseFloat(inp.value) || 0;
+    amt.textContent = '₹' + (litres * ratePerLitre).toFixed(2);
+  }
+
+  function updateRate() {
+    const sel = document.getElementById('customerSelect');
+    const opt = sel.options[sel.selectedIndex];
+    ratePerLitre = parseFloat(opt.dataset.rate) || 0;
+    calcAmount();
+  }
+
+  // Initial
+  updateRate();
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Daily Records — Namma Paal Kanakku{% endblock %}
+
+{% block content %}
+<main class="page-main" style="padding-top:88px;">
+
+  <!-- ── Header ── -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+    <div>
+      <p class="font-label-caps" style="color:var(--primary);margin-bottom:4px;">RECORDS</p>
+      <h2 class="font-headline-lg-mobile" style="color:var(--on-surface);">Daily Milk Entries</h2>
+    </div>
+    <a href="/milk_entry" class="btn-gradient" style="padding:10px 18px;border-radius:12px;font-size:14px;gap:6px;">
+      <span class="material-symbols-outlined" style="font-size:18px;">add</span>
+      New Entry
+    </a>
+  </div>
+
+  <!-- ── Summary Stats ── -->
+  {% if entries %}
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;">
+    <div class="glass-card" style="border-radius:14px;padding:16px;text-align:center;">
+      <p class="font-label-caps" style="color:var(--on-surface-variant);margin-bottom:4px;">TOTAL ENTRIES</p>
+      <p class="font-display-lg" style="font-size:32px;color:var(--secondary);">{{ entries|length }}</p>
+    </div>
+    <div class="glass-card" style="border-radius:14px;padding:16px;text-align:center;">
+      <p class="font-label-caps" style="color:var(--on-surface-variant);margin-bottom:4px;">TOTAL LITRES</p>
+      <p class="font-display-lg" style="font-size:32px;color:var(--primary);">
+        {{ "%.1f"|format(entries|sum(attribute=4)) }}
+      </p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Search ── -->
+  <div class="glass-input" style="display:flex;align-items:center;padding:12px 16px;border-radius:12px;margin-bottom:20px;">
+    <span class="material-symbols-outlined" style="color:var(--on-surface-variant);margin-right:10px;">search</span>
+    <input type="text" id="entrySearch" placeholder="Search by name, date, or session…"
+           style="background:transparent;border:none;color:var(--on-surface);font-family:'Inter';font-size:15px;outline:none;flex:1;"
+           oninput="filterEntries(this.value)">
+  </div>
+
+  <!-- ── Entry Cards ── -->
+  {% if entries %}
+    <div style="display:flex;flex-direction:column;gap:10px;" id="entriesList">
+      {% for entry in entries %}
+      <div class="entry-card entry-row">
+        <!-- Session Icon -->
+        <div class="session-icon {% if entry[3] == 'Morning' %}session-morning{% else %}session-evening{% endif %}">
+          <span class="material-symbols-outlined fill" style="font-size:22px;">
+            {% if entry[3] == 'Morning' %}wb_sunny{% else %}dark_mode{% endif %}
+          </span>
+        </div>
+
+        <!-- Info -->
+        <div style="flex:1;min-width:0;">
+          <h3 class="font-title-md" style="color:var(--on-surface);font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ entry[1] }}</h3>
+          <p class="font-body-sm" style="color:var(--on-surface-variant);">{{ entry[3] }} &bull; {{ entry[2] }}</p>
+        </div>
+
+        <!-- Litres + WhatsApp -->
+        <div style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
+          <div style="text-align:right;">
+            <p class="font-mono-data" style="color:var(--on-surface);font-size:16px;font-weight:600;">{{ entry[4] }}&nbsp;L</p>
+            <p class="font-label-caps" style="color:var(--on-surface-variant);font-size:10px;">ID #{{ entry[0] }}</p>
+          </div>
+          <a href="/send_whatsapp/{{ entry[0] }}" class="btn-whatsapp" title="Send WhatsApp">
+            <span class="material-symbols-outlined" style="font-size:18px;">share</span>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="glass-card" style="border-radius:18px;padding:64px 32px;text-align:center;">
+      <span class="material-symbols-outlined" style="font-size:56px;color:var(--on-surface-variant);opacity:0.4;display:block;margin-bottom:16px;">inbox</span>
+      <p class="font-title-md" style="color:var(--on-surface);margin-bottom:8px;">No entries yet</p>
+      <p class="font-body-sm" style="color:var(--on-surface-variant);margin-bottom:24px;">Start recording milk collections</p>
+      <a href="/milk_entry" class="btn-primary" style="width:auto;padding:0 28px;display:inline-flex;">
+        <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span>
+        Add First Entry
+      </a>
+    </div>
+  {% endif %}
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function filterEntries(query) {
+    const rows = document.querySelectorAll('.entry-row');
+    const q = query.toLowerCase();
+    rows.forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+</script>
+{% endblock %}

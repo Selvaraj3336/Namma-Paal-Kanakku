@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Namma Paal Kanakku{% endblock %}
+
+{% block content %}
+<main class="page-main" style="padding-top:88px;">
+
+  <!-- ── Greeting ── -->
+  <div style="margin-bottom:28px;">
+    <p class="font-label-caps" style="color:var(--tertiary);margin-bottom:4px;">DASHBOARD</p>
+    <h2 class="font-headline-lg-mobile" style="color:var(--on-surface);">Overview</h2>
+    <p class="font-body-sm" style="color:var(--on-surface-variant);margin-top:2px;">Your milk collection at a glance</p>
+  </div>
+
+  <!-- ── Stat Cards ── -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;">
+
+    <!-- Customers -->
+    <div class="stat-card">
+      <div class="bg-blob" style="background:var(--primary);"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <span class="material-symbols-outlined" style="background:var(--primary-container);padding:10px;border-radius:12px;color:var(--primary);font-size:22px;">group</span>
+      </div>
+      <p class="font-label-caps" style="color:var(--on-surface-variant);margin-bottom:4px;">TOTAL CUSTOMERS</p>
+      <h3 class="font-display-lg" style="font-size:42px;color:var(--on-surface);">{{ total_customers }}</h3>
+      <div style="margin-top:14px;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;">
+        <div style="height:100%;width:75%;background:var(--primary);box-shadow:0 0 8px rgba(149,211,186,0.5);border-radius:2px;"></div>
+      </div>
+    </div>
+
+    <!-- Milk -->
+    <div class="stat-card">
+      <div class="bg-blob" style="background:var(--tertiary);"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <span class="material-symbols-outlined" style="background:var(--tertiary-container);padding:10px;border-radius:12px;color:var(--tertiary);font-size:22px;">water_drop</span>
+      </div>
+      <p class="font-label-caps" style="color:var(--on-surface-variant);margin-bottom:4px;">TOTAL LITRES</p>
+      <h3 class="font-display-lg" style="font-size:42px;color:var(--on-surface);">{{ total_milk }}<span style="font-size:18px;color:var(--on-surface-variant);margin-left:4px;">L</span></h3>
+      <p class="font-body-sm" style="color:var(--on-surface-variant);margin-top:6px;">All time collected</p>
+    </div>
+
+    <!-- Revenue -->
+    <div class="stat-card" style="background:linear-gradient(135deg,rgba(6,78,59,0.25) 0%,rgba(29,32,34,0.45) 100%);border-color:rgba(149,211,186,0.15);">
+      <div class="bg-blob" style="background:var(--primary);opacity:0.4;width:120px;height:120px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <span class="material-symbols-outlined fill" style="background:rgba(255,255,255,0.08);padding:10px;border-radius:12px;color:var(--primary);font-size:22px;">payments</span>
+      </div>
+      <p class="font-label-caps" style="color:var(--primary);margin-bottom:4px;">TOTAL REVENUE</p>
+      <h3 class="font-display-lg" style="font-size:38px;color:var(--on-surface);">₹{{ "%.0f"|format(total_revenue) }}</h3>
+    </div>
+
+  </div>
+
+  <!-- ── Quick Actions ── -->
+  <div style="margin-bottom:28px;">
+    <p class="font-label-caps" style="color:var(--on-surface-variant);margin-bottom:14px;">QUICK ACTIONS</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
+
+      <a href="/add_customer" class="glass-card" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 16px;border-radius:16px;text-decoration:none;transition:all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(149,211,186,0.2),rgba(69,223,164,0.1));display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-outlined" style="color:var(--primary);font-size:22px;">person_add</span>
+        </div>
+        <span class="font-label-caps" style="color:var(--on-surface);text-align:center;">Add Customer</span>
+      </a>
+
+      <a href="/milk_entry" class="glass-card" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 16px;border-radius:16px;text-decoration:none;transition:all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(69,223,164,0.2),rgba(149,211,186,0.1));display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-outlined" style="color:var(--tertiary);font-size:22px;">add_circle</span>
+        </div>
+        <span class="font-label-caps" style="color:var(--on-surface);text-align:center;">Milk Entry</span>
+      </a>
+
+      <a href="/entries" class="glass-card" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 16px;border-radius:16px;text-decoration:none;transition:all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(188,199,222,0.2),rgba(62,73,93,0.1));display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-outlined" style="color:var(--secondary);font-size:22px;">receipt_long</span>
+        </div>
+        <span class="font-label-caps" style="color:var(--on-surface);text-align:center;">Records</span>
+      </a>
+
+      <a href="/monthly_report" class="glass-card" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 16px;border-radius:16px;text-decoration:none;transition:all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(149,211,186,0.15),rgba(6,78,59,0.2));display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-outlined" style="color:var(--primary);font-size:22px;">analytics</span>
+        </div>
+        <span class="font-label-caps" style="color:var(--on-surface);text-align:center;">Monthly Report</span>
+      </a>
+
+    </div>
+  </div>
+
+</main>
+{% endblock %}

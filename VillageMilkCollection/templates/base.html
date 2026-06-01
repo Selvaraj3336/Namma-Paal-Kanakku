@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Namma Paal Kanakku{% endblock %}</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <!-- Stitch Design System -->
+  <link rel="stylesheet" href="/static/style.css">
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- ── Top App Bar ── -->
+  <header class="top-bar">
+    <div class="top-bar-logo">
+      <div class="top-bar-logo-icon">
+        <span class="material-symbols-outlined text-primary" style="font-size:20px;">eco</span>
+      </div>
+      <h1>Namma Paal Kanakku</h1>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="/logout" class="btn-ghost" style="padding:8px 14px;gap:6px;font-size:13px;" title="Logout">
+        <span class="material-symbols-outlined" style="font-size:18px;">logout</span>
+        <span class="hide-mobile">Logout</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ── Flash Messages ── -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div style="position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:100;width:min(480px,calc(100vw - 32px));">
+        {% for category, message in messages %}
+          <div class="alert-stitch {% if category == 'error' %}alert-error{% else %}alert-success{% endif %}">
+            <span class="material-symbols-outlined" style="font-size:18px;">
+              {% if category == 'error' %}error_outline{% else %}check_circle{% endif %}
+            </span>
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- ── Page Content ── -->
+  {% block content %}{% endblock %}
+
+  <!-- ── Bottom Navigation ── -->
+  <nav class="bottom-nav">
+    <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}">
+      <span class="material-symbols-outlined {% if request.path == '/dashboard' %}fill{% endif %}">grid_view</span>
+      <span class="label">Home</span>
+    </a>
+    <a href="/milk_entry" class="nav-item {% if request.path == '/milk_entry' %}active{% endif %}">
+      <span class="material-symbols-outlined {% if request.path == '/milk_entry' %}fill{% endif %}">add_circle</span>
+      <span class="label">Entry</span>
+    </a>
+    <a href="/customers" class="nav-item {% if request.path == '/customers' or '/add_customer' in request.path or '/edit_customer' in request.path %}active{% endif %}">
+      <span class="material-symbols-outlined {% if request.path == '/customers' %}fill{% endif %}">group</span>
+      <span class="label">Customers</span>
+    </a>
+    <a href="/entries" class="nav-item {% if request.path == '/entries' %}active{% endif %}">
+      <span class="material-symbols-outlined {% if request.path == '/entries' %}fill{% endif %}">receipt_long</span>
+      <span class="label">Records</span>
+    </a>
+    <a href="/monthly_report" class="nav-item {% if request.path == '/monthly_report' %}active{% endif %}">
+      <span class="material-symbols-outlined {% if request.path == '/monthly_report' %}fill{% endif %}">analytics</span>
+      <span class="label">Report</span>
+    </a>
+  </nav>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>
